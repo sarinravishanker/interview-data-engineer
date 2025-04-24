@@ -1,0 +1,22 @@
+# This file is used to configure the dbt profiles for different environments
+hostaway_db:
+  outputs:
+    dev:
+      type: postgres
+      threads: 1
+      host: localhost
+      port: 5432
+      user: "postgres"
+      pass: "mysecretpassword"
+      dbname: sales
+      schema: dev
+    prod:
+      type: postgres
+      threads: 3
+      host: localhost
+      port: 5432
+      user: "docker"
+      pass: "docker"
+      dbname: prod
+      schema: prod
+  target: dev #environment variable can be used to set the target
