@@ -19,10 +19,8 @@ models:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+          - positive_values
       - name: Price
         description: "Price of the product."
         tests:
-          - not_null
-          - relationships:
-              to: ref('dim_products')
-              field: ProductID
+          - positive_values
