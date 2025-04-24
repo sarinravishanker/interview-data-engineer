@@ -28,3 +28,6 @@ models:
     staging:
       +materialized: table
       +schema: stg__sales
+    dimensions:
+      +materialized: table
+      +schema: stg__products

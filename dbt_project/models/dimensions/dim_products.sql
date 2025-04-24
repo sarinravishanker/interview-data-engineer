@@ -1,12 +1,14 @@
-with product_sales as (
-    select
-        ProductID,
-        ProductName,
-        Brand,
-        Category,
-        sum(Quantity) as TotalQuantitySold,
-        sum(Price * Quantity) as TotalRevenue
-    from {{ ref('stg_sales') }}
-    group by ProductID, ProductName, Brand, Category
-)
-select * from product_sales;
+WITH
+    product_sales AS (
+        SELECT
+            productid,
+            productname,
+            brand,
+            category,
+            SUM(quantity) AS totalquantitysold,
+            SUM(price * quantity) AS totalrevenue
+        FROM {{ ref('stg_sales') }}
+        GROUP BY productid, productname, brand, category
+    )
+
+SELECT * FROM product_sales

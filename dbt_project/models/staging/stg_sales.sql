@@ -1,19 +1,21 @@
-with cleaned_sales as (
-    select
-        SaleID,
-        ProductID,
-        ProductName,
-        Brand,
-        Category,
-        RetailerID,
-        RetailerName,
-        Channel,
-        coalesce(Location, 'Unknown') as Location,
-        cast(Quantity as int) as Quantity,
-        cast(replace(Price, 'USD', '') as numeric) as Price,
-        cast(Date as date) as SaleDate,
-        _etl_timestamp,
-        filename
-    from {{ source('raw__sales', 'fct_sales') }}
-)
-select * from cleaned_sales;
+WITH
+    cleaned_sales AS (
+        SELECT
+            saleid,
+            productid,
+            productname,
+            brand,
+            category,
+            retailerid,
+            retailername,
+            channel,
+            COALESCE(location, 'Unknown') AS location,
+            CAST(quantity AS INT) AS quantity,
+            CAST(REPLACE(price, 'USD', '') AS NUMERIC) AS price,
+            CAST(date AS DATE) AS saledate,
+            _etl_timestamp,
+            filename as source_file,
+        FROM {{ source('raw__sales', 'fct_sales') }}
+    )
+
+SELECT * FROM cleaned_sales
