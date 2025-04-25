@@ -1,96 +1,88 @@
+import os
 import pandas as pd
 import psycopg2
-from psycopg2 import sql
 from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("load_csv.log", mode="a")
+    ]
+)
 
 class SalesDataProcessor:
-    def __init__(self, csv_path, db_config):
-        self.csv_path = csv_path
+    def __init__(self, files, db_config):
+        self.files = files
         self.db_config = db_config
         self.data = None
 
-    def read_csv(self):
-        """Reads the CSV file into a Pandas DataFrame."""
-        self.data = pd.read_csv(self.csv_path, sep=",", encoding="utf-8")
-        print("Preview of the data:")
-        print(self.data.head())
-        print(self.data.shape)
+    def read_csv(self, file_path):
+        """Read a CSV file into a DataFrame."""
+        try:
+            self.data = pd.read_csv(file_path, sep=",", encoding="utf-8")
+            logging.info(f"Successfully read CSV file: {file_path}")
+            logging.info(f"Preview of the data:\n{self.data.head()}")
+            logging.info(f"Shape of the data: {self.data.shape}")
+        except Exception as e:
+            logging.error(f"Error reading CSV file {file_path}: {e}")
+            raise
 
-    def create_schema_and_table(self):
-        """Creates the schema, table, and index on SaleID if it does not exist."""
-        create_schema_query = "CREATE SCHEMA IF NOT EXISTS raw__sales;"
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS raw__sales.fct_sales (
-            SaleID INT PRIMARY KEY,
-            ProductID TEXT,
-            ProductName TEXT,
-            Brand TEXT,
-            Category TEXT,
-            RetailerID INT,
-            RetailerName TEXT,
-            Channel TEXT,
-            Location TEXT,
-            Quantity TEXT,
-            Price TEXT,
-            Date DATE,
-            _etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            filename TEXT
-        );
-        """
-        create_index_query = """
-        CREATE UNIQUE INDEX IF NOT EXISTS idx_sale_id ON raw__sales.fct_sales (SaleID);
-        """
-        with psycopg2.connect(**self.db_config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(create_schema_query)
-                cur.execute(create_table_query)
-                cur.execute(create_index_query)
-                conn.commit()
-
-    def write_to_db(self):
-        """Writes the DataFrame to the PostgreSQL database."""
-        with psycopg2.connect(**self.db_config) as conn:
-            with conn.cursor() as cur:
-                for _, row in self.data.iterrows():
-                    insert_query = sql.SQL("""
+    def write_to_db(self, file_path):
+        """Write the data to the database."""
+        conn = psycopg2.connect(**self.db_config)
+        try:
+            cursor = conn.cursor()
+            for _, row in self.data.iterrows():
+                try:
+                    cursor.execute(
+                        """
                         INSERT INTO raw__sales.fct_sales (
                             saleid, productid, productname, brand, category, retailerid, retailername, 
-                            channel, location, quantity, price, date, _etl_timestamp, filename
-                        ) VALUES (
-                            {saleid}, {productid}, {productname}, {brand}, {category}, {retailerid}, {retailername}, 
-                            {channel}, {location}, {quantity}, {price}, {date}, {etltimestamp}, {filename}
-                        )
+                            channel, location, quantity, price, date, _etl_timestamp, sourcefilename
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (saleid) DO NOTHING;
-                    """).format(
-                        saleid=sql.Literal(row["SaleID"]),
-                        productid=sql.Literal(row["ProductID"]),
-                        productname=sql.Literal(row["ProductName"]),
-                        brand=sql.Literal(row["Brand"]),
-                        category=sql.Literal(row["Category"]),
-                        retailerid=sql.Literal(row["RetailerID"]),
-                        retailername=sql.Literal(row["RetailerName"]),
-                        channel=sql.Literal(row["Channel"]),
-                        location=sql.Literal(row["Location"]),
-                        quantity=sql.Literal(row["Quantity"]),
-                        price=sql.Literal(row["Price"]),
-                        date=sql.Literal(row["Date"]),
-                        etltimestamp=sql.Literal(datetime.now()),
-                        filename=sql.Literal(self.csv_path.split("/")[-1])
+                        """,
+                        (
+                            row["SaleID"], row["ProductID"], row["ProductName"], row["Brand"], row["Category"],
+                            row["RetailerID"], row["RetailerName"], row["Channel"], row["Location"], row["Quantity"],
+                            row["Price"], row["Date"], datetime.now(), file_path.split("/")[-1]
+                        )
                     )
-                    cur.execute(insert_query)
-                conn.commit()
+                except Exception as e:
+                    logging.error(f"Error inserting row into database: {e}")
+            conn.commit()
+            logging.info(f"Successfully wrote data from {file_path} to the database.")
+        except Exception as e:
+            logging.error(f"Error writing to database for file {file_path}: {e}")
+            raise
+        finally:
+            cursor.close()
+            conn.close()
+
+    def process_files(self):
+        """Process all files."""
+        for file in self.files:
+            try:
+                logging.info(f"Processing file: {file}")
+                self.read_csv(file)
+                self.write_to_db(file)
+            except Exception as e:
+                logging.error(f"Failed to process file {file}: {e}")
 
 if __name__ == "__main__":
-    csv_path = "/Users/sarinravishanker/github-sarin/interview-data-engineer/generated_sales_data.csv"
+    csv_dir = "/Users/sarinravishanker/github-sarin/interview-data-engineer/csv_files"
+    files = [os.path.join(csv_dir, file) for file in os.listdir(csv_dir) if file.endswith(".csv")]
     db_config = {
-        "dbname": "sales",
-        "user": "postgres",
-        "password": "mysecretpassword",
-        "host": "localhost",  # Use 'postgres' if running on Linux or custom Docker network
+        "dbname": os.getenv("POSTGRES_DB"),
+        "user": os.getenv("POSTGRES_USER"),
+        "password": os.getenv("POSTGRES_PASSWORD"),
+        "host": os.getenv("POSTGRES_HOST"),
         "port": 5432
     }
 
-    processor = SalesDataProcessor(csv_path, db_config)
-    processor.read_csv()
-    processor.create_schema_and_table()
-    processor.write_to_db()
+    processor = SalesDataProcessor(files, db_config)
+    processor.process_files()
