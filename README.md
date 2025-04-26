@@ -28,7 +28,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 ## DBT ERD Flow
 
-              ![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
+  ![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
 
 raw__sales.fct_sales
 +-------------------+
