@@ -2,14 +2,14 @@
 
 ## Table of Contents
 1. [Intro](#intro)
-2. [Approach](#approach)
-3. [Tech Stack](#tech-stack)
-4. [Features](#features)
-5. [Quick Start](#quick-start)
-6. [Steps to Run the Docker Containers](#steps-to-run-the-docker-containers)
-7. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
-8. [Data Pipeline Flow](#data-pipeline-flow)
-9. [DBT ERD Flow](#dbt-erd-flow)
+2. [Data Pipeline Flow](#data-pipeline-flow)
+3. [DBT ERD Flow](#dbt-erd-flow)
+4. [Approach](#approach)
+5. [Tech Stack](#tech-stack)
+6. [Features](#features)
+7. [Quick Start](#quick-start)
+8. [Steps to Run the Docker Containers](#steps-to-run-the-docker-containers)
+9. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
 
 ---
 
@@ -17,6 +17,18 @@
 This project demonstrates a data engineering pipeline that processes raw sales data, transforms it using DBT, and orchestrates the workflow using Apache Airflow. The pipeline is containerized using Docker for easy deployment and scalability.
 
 > **Note**: The development environment (`dev`) was used to test and showcase the working pipeline. The DBT `profiles.yml` file is configured to use the `dev` target by default.
+
+---
+
+## Data Pipeline Flow
+
+![Data Pipeline Flow](./images/ELT_DATA_FLOW.png)
+
+---
+
+## DBT ERD Flow
+
+![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
 
 ---
 
@@ -176,18 +188,6 @@ This project demonstrates a data engineering pipeline that processes raw sales d
         ```bash
         \q
         ```
-
----
-
-## Data Pipeline Flow
-
-![Data Pipeline Flow](./images/ELT_DATA_FLOW.png)
-
----
-
-## DBT ERD Flow
-
-![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
 
 ---
 
