@@ -213,36 +213,27 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ## Incremental Loading
 
 ### Assumptions
-- Incremental loading assumes that `SaleID` is a **unique identifier** and always increases in order.
+- Incremental loading assumes that `SaleID` is a **unique identifier** and always increases sequentially.
 - To fetch only the latest data, the maximum `SaleID` is retrieved from the `raw__sales.fct_sales` table, and only records with `SaleID` greater than this value are inserted.
+- For illustrative purposes, an additional DAG has been created specifically for incremental loading. This DAG uses a hardcoded file containing the existing data along with one new record featuring a higher `SaleID`.
 
 ### Steps to Simulate Incremental Loading
 
 1. **Run the Initial Load**:
    - Trigger the `orchestrate_load_csv` DAG in Airflow to load the initial data from `generated_sales_data.csv`.
 
-2. **Update the Data**:
-   - Add a new record to the `generated_sales_data.csv` file. For example:
-     ```plaintext
-     1050,6,Desk Lamp,BrandF,Electronics,1,TechGear,Online,None,3,100,2024-03-01
-     ```
-
-3. **Rebuild the Docker Containers**:
-   - Rebuild the Docker containers to ensure the updated data is available:
-     ```bash
-     docker-compose up --build -d
-     ```
-
-4. **Run the Incremental Load**:
+2. **Run the Incremental Load**:
    - Trigger the `orchestrate_load_csv_incremental` DAG in Airflow to load only the new records.
 
-5. **Verify the Results**:
+3. **Verify the Results**:
    - Check the Airflow logs to confirm the number of records inserted. The logs will display a message like:
      ```
+     Maximum SaleID in the database: 1005
+     Number of new records to insert: 1
      Inserted 1 new records into raw__sales.fct_sales.
      ```
 
-6. **View the Records in PostgreSQL**:
+4. **View the Records in PostgreSQL**:
    - Access the PostgreSQL database to verify that only the new records have been inserted:
      ```bash
      docker exec -it <postgres-container-id> psql -U postgres -d sales

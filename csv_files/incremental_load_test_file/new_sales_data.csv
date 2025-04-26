@@ -1,0 +1,5 @@
+SaleID,ProductID,ProductName,Brand,Category,RetailerID,RetailerName,Channel,Location,Quantity,Price,Date
+997,3,Smartphone,BrandC,Electronics,1,TechGear,Online,,5,4000,2024-02-22
+998,2,Coffee Maker,BrandB,Appliances,2,HomeEssentials,Offline,New York,1,100,2024-02-13
+999,2,Coffee Maker,BrandB,Appliances,3,GadgetWorld,Offline,San Francisco,1,100,2024-02-20
+1050,6,Desk Lamp,BrandF,Electronics,1,TechGear,Online,None,3,100,2024-03-01

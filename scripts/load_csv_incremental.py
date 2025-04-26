@@ -24,7 +24,7 @@ def execute_load_csv_incremental():
         logging.info("Connected to the database successfully.")
 
         # Load the new CSV file
-        csv_file_path = "/opt/airflow/csv_files/new_sales_data.csv"
+        csv_file_path = "/opt/airflow/csv_files/incremental_load_test_file/new_sales_data.csv"
         logging.info(f"Reading CSV file from path: {csv_file_path}")
         df = pd.read_csv(csv_file_path)
 
