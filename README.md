@@ -8,7 +8,7 @@
 5. [Tech Stack](#tech-stack)
 6. [Quick Start](#quick-start)
 7. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
-8. [Testing Incremental Loading](#testing-incremental-loading)
+8. [Incremental Loading](#incremental-loading)
 
 ---
 
@@ -210,44 +210,46 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 ---
 
-## Testing Incremental Loading
+## Incremental Loading
 
-To test incremental loading, we assume that `SaleID` increases whenever there are new records. The goal is to load only the latest records into the database without reprocessing existing data. This can be achieved by running the `load_csv_incremental.py` script.
+### Assumptions
+- Incremental loading assumes that `SaleID` is a **unique identifier** and always increases in order.
+- To fetch only the latest data, the maximum `SaleID` is retrieved from the `raw__sales.fct_sales` table, and only records with `SaleID` greater than this value are inserted.
 
-### Steps to Test Incremental Loading
+### Steps to Simulate Incremental Loading
 
-1. **Prepare the Incremental Data**:
-   - Add a new CSV file containing only the latest records with higher `SaleID` values than those already present in the database.
-   - Place the file in the `csv_files` directory.
+1. **Run the Initial Load**:
+   - Trigger the `orchestrate_load_csv` DAG in Airflow to load the initial data from `generated_sales_data.csv`.
 
-2. **Run the Incremental Loading Script**:
-   - Use the `load_csv_incremental.py` script to load only the new records:
-     ```bash
-     docker exec -it <airflow-webserver-container-id> python /opt/airflow/scripts/load_csv_incremental.py
+2. **Update the Data**:
+   - Add a new record to the `generated_sales_data.csv` file. For example:
+     ```plaintext
+     1050,6,Desk Lamp,BrandF,Electronics,1,TechGear,Online,None,3,100,2024-03-01
      ```
 
-3. **Verify the Results**:
-   - Check the `raw__sales.fct_sales` table to ensure only the new records have been added:
+3. **Rebuild the Docker Containers**:
+   - Rebuild the Docker containers to ensure the updated data is available:
+     ```bash
+     docker-compose up --build -d
+     ```
+
+4. **Run the Incremental Load**:
+   - Trigger the `orchestrate_load_csv_incremental` DAG in Airflow to load only the new records.
+
+5. **Verify the Results**:
+   - Check the Airflow logs to confirm the number of records inserted. The logs will display a message like:
+     ```
+     Inserted 1 new records into raw__sales.fct_sales.
+     ```
+
+6. **View the Records in PostgreSQL**:
+   - Access the PostgreSQL database to verify that only the new records have been inserted:
      ```bash
      docker exec -it <postgres-container-id> psql -U postgres -d sales
      SELECT * FROM raw__sales.fct_sales ORDER BY SaleID DESC LIMIT 10;
      ```
 
-4. **Run the DAG**:
-   - Trigger the Airflow DAG `orchestrate_load_csv` to process the new data through DBT transformations and tests.
+### Notes
+- Ensure that the `SaleID` values in the updated data are greater than the maximum `SaleID` already present in the database.
+- Use the Airflow logs to debug and confirm the number of records inserted during the incremental load process.
 
-5. **Verify the DBT Models**:
-   - Check the staging and dimension tables to ensure the new records have been processed correctly:
-     ```sql
-     SELECT * FROM dev_stg__sales.stg_sales ORDER BY SaleID DESC LIMIT 10;
-     SELECT * FROM dev_stg__dimensions.dim_products LIMIT 10;
-     ```
-
----
-
-## Notes
-- Ensure the `load_csv_incremental.py` script is configured to handle incremental logic by comparing the `SaleID` values.
-- Incremental loading assumes that `SaleID` is a monotonically increasing unique identifier.
-- Use the Airflow logs to debug any issues during the incremental loading process.
-
----
