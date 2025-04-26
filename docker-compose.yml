@@ -11,7 +11,9 @@ services:
       - "5432:5432"
 
   airflow-webserver:
-    image: apache/airflow:2.6.3-python3.9
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use the custom Dockerfile
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
@@ -23,6 +25,7 @@ services:
       - ./plugins:/opt/airflow/plugins
       - ./scripts:/opt/airflow/scripts
       - ./csv_files:/opt/airflow/csv_files  # Mount the csv_files directory
+      - ./dbt_project:/opt/airflow/dbt_project  # Mount the dbt_project directory
     ports:
       - "8080:8080"
     depends_on:
@@ -30,7 +33,9 @@ services:
     command: ["bash", "-c", "airflow db init && airflow users create --username airflow --firstname Admin --lastname User --role Admin --email admin@example.com --password airflow && airflow webserver"]
 
   airflow-scheduler:
-    image: apache/airflow:2.6.3-python3.9
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use the custom Dockerfile
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
@@ -43,5 +48,6 @@ services:
       - ./plugins:/opt/airflow/plugins
       - ./scripts:/opt/airflow/scripts
       - ./csv_files:/opt/airflow/csv_files  # Mount the csv_files directory
+      - ./dbt_project:/opt/airflow/dbt_project  # Mount the dbt_project directory
     depends_on:
       - postgres

@@ -1,8 +1,6 @@
-pytest==7.4.4
 dbt-core==1.8.7
 dbt-postgres==1.8.2
+pytest==7.4.4
 sqlfluff==3.2.0
 sqlfluff-templater-dbt==3.2.0
-
-# Add your Python dependencies here
-psycopg2
+psycopg2-binary==2.9.6  # Use psycopg2-binary instead of psycopg2 for easier installation
