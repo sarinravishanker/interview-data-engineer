@@ -157,6 +157,9 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 3. **Monitor the Workflow**:
    - View the progress of tasks (`execute_load_csv`, `execute_dbt_models`, `execute_dbt_tests`) in the Airflow UI.
 
+  ![Airflow Progress Page](./images/airflow_job_status_page.png)
+
+
 4. **Verify the Results**:
    - Check the PostgreSQL database to ensure the raw and transformed data is loaded correctly:
      ```bash
