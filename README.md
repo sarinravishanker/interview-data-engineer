@@ -52,7 +52,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
   - This ensures consistency and avoids null values in the staging table.
 
 - **Fixing Price Field**:
-  - The `Price` field in the raw data contains a currency suffix (e.g., `USD`).
+  - The `Price` field in the raw data contains a currency suffix (e.g., `USD`) for some records
   - During transformation, the `USD` suffix is removed, and the field is cast to a numeric type.
   - The field is renamed to `price_in_usd` in the staging table for clarity.
 
@@ -105,16 +105,6 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 - **Pandas**: Data manipulation for CSV ingestion.
 - **Python**: Core programming language for custom scripts.
 - **Pytest**: Unit testing framework for Python.
-
----
-
-## Features
-- **CSV Ingestion**: Reads raw sales data from CSV files and loads it into a PostgreSQL database.
-- **Data Transformation**: Cleans and transforms raw data using DBT models.
-- **Data Testing**: Validates data quality using DBT tests.
-- **Orchestration**: Automates the entire workflow using Apache Airflow.
-- **Containerized Setup**: Simplifies deployment with Docker.
-- **Unit Tests**: Basic unit tests for the `load_csv` Python script to validate CSV ingestion logic and database interactions.
 
 ---
 
@@ -207,7 +197,14 @@ This project demonstrates a data engineering pipeline that processes raw sales d
         SELECT * FROM raw__sales.fct_sales LIMIT 10;
         ```
 
-     6. **Exit the PostgreSQL Prompt**:
+     6. **Verify Dimension Table (`dim_products`)**:
+        - Query the `dim_products` table to ensure the data is aggregated correctly:
+          ```sql
+          SELECT * FROM dev_stg__dimensions.dim_products LIMIT 10;
+          ```
+        - Verify that the `productid`, `productname`, `brand`, and `category` fields are populated correctly.
+
+     7. **Exit the PostgreSQL Prompt**:
         ```bash
         \q
         ```
