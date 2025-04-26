@@ -9,6 +9,7 @@
 6. [Quick Start](#quick-start)
 7. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
 8. [Incremental Loading](#incremental-loading)
+9. [Future Improvements](#future-improvements)
 
 ---
 
@@ -243,4 +244,36 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ### Notes
 - Ensure that the `SaleID` values in the updated data are greater than the maximum `SaleID` already present in the database.
 - Use the Airflow logs to debug and confirm the number of records inserted during the incremental load process.
+
+---
+
+## Future Improvements
+
+### 1. Combine `load_csv` and `load_csv_incremental` into One Script
+- Refactor the `load_csv` and `load_csv_incremental` scripts into a single, modular script.
+- Add a parameter to toggle between full and incremental loading modes.
+- This will reduce code duplication and improve maintainability.
+
+### 2. Airflow Improvements
+- Implement **Pytest** for DAG validation and testing to ensure DAGs are functioning as expected.
+- Add **task-level retries** and **alerting mechanisms** for better error handling and monitoring.
+- Use **Airflow Variables** or **Connections** to manage configuration dynamically instead of hardcoding values.
+
+### 3. DBT Improvements
+- Add **custom tests** in DBT to validate business-specific rules (e.g., no negative prices, valid product IDs).
+- Implement **snapshot testing** to track changes in slowly changing dimensions (SCDs).
+- Use **DBT packages** to modularize reusable transformations and macros.
+
+### 4. Modular Design
+- Improve the modularity of the pipeline by separating concerns:
+  - Create reusable utility functions for database operations.
+  - Use a configuration file (e.g., `config.yaml`) to manage paths, database credentials, and other settings.
+- This will make the pipeline easier to extend and adapt to new requirements.
+
+### 5. Scalability and Performance
+- Optimize database queries for better performance, especially for large datasets.
+- Explore partitioning and indexing strategies for the `raw__sales` table to improve query efficiency.
+- Consider using a distributed data warehouse (e.g., Snowflake, BigQuery) for scalability.
+
+---
 
