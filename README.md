@@ -9,7 +9,8 @@
 6. [Quick Start](#quick-start)
 7. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
 8. [Incremental Loading](#incremental-loading)
-9. [Future Improvements](#future-improvements)
+9. [DBT Tests](#dbt-tests)
+10. [Future Improvements](#future-improvements)
 
 ---
 
@@ -248,6 +249,29 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ### Notes
 - Ensure that the `SaleID` values in the updated data are greater than the maximum `SaleID` already present in the database.
 - Use the Airflow logs to debug and confirm the number of records inserted during the incremental load process.
+
+---
+
+## DBT Tests
+
+DBT tests are used to ensure data quality and integrity during the transformation process. The following types of tests are implemented in this project:
+
+### 1. Built-in Tests
+- **`not_null`**: Ensures that critical columns (e.g., `SaleID`, `ProductID`) do not contain null values.
+- **`unique`**: Ensures that certain columns (e.g., `SaleID`) have unique values.
+
+### 2. Custom Tests
+- **`assert_no_negative_values`**: Validates that numeric fields (e.g., `price_in_usd`) do not contain negative values.
+  - This test is implemented as a custom SQL query in DBT.
+
+### 3. Schema Tests
+- Defined in the `schema.yml` file to validate the structure and constraints of the staging models.
+- Example:
+  - `stg_sales` model includes tests for `SaleID` (not null, unique) and `price_in_usd` (no negative values).
+
+### 4. Data Consistency Tests
+- Ensure that relationships between tables are consistent (e.g., foreign key constraints).
+- Example: Validate that `ProductID` in the `stg_sales` table exists in the `dim_products` table.
 
 ---
 
