@@ -251,29 +251,17 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 The DBT documentation is hosted using the `dbt docs generate` and `dbt docs serve` commands within the `dbt-docs` service. Follow these steps to access the DBT docs:
 
-1. **Start the Docker Containers**:
-   Ensure the `dbt-docs` service is running by starting the Docker containers:
-   ```bash
-   docker-compose up --build -d
-   ```
-
-2. **Access the DBT Docs**:
+1. **Access the DBT Docs**:
    Open your browser and navigate to:
    ```
    http://localhost:8081
    ```
 
-3. **Explore the Documentation**:
+2. **Explore the Documentation**:
    - The DBT docs interface allows you to:
      - View the lineage graph of your DBT models.
      - Explore the schema and metadata of your models.
      - Access details about tests, sources, and macros.
-
-4. **Stop the DBT Docs Server**:
-   If you need to stop the `dbt-docs` service, run:
-   ```bash
-   docker-compose stop dbt-docs
-   ```
 
 ---
 
