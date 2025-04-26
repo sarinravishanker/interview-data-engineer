@@ -46,26 +46,47 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 - The raw data is ingested into the `raw__sales` schema in the PostgreSQL database.
 - This schema acts as the landing zone, where the data is stored in its original format before any transformations are applied.
 
-### 3. Unit Testing with Pytest
+### 3. Handling Data Quality Issues
+- **Blank Values in Location**:
+  - Blank or invalid values in the `Location` field are defaulted to `Unknown` for records where the `Channel` is `Online`.
+  - This ensures consistency and avoids null values in the staging table.
+
+- **Fixing Price Field**:
+  - The `Price` field in the raw data contains a currency suffix (e.g., `USD`).
+  - During transformation, the `USD` suffix is removed, and the field is cast to a numeric type.
+  - The field is renamed to `price_in_usd` in the staging table for clarity.
+
+> **Note**: Since we are using an ELT approach, these data quality issues are fixed during the transformation step in DBT, rather than during ingestion. This aligns with the business requirements to preserve raw data for auditing and debugging purposes.
+
+### 4. Adding Metadata Fields
+- **_etl_timestamp**:
+  - A timestamp field is added to record the exact time the data was loaded into the database.
+  - This helps in tracking data lineage and debugging issues related to data freshness.
+
+- **source_filename**:
+  - A field is added to store the name of the source file from which the data was ingested.
+  - This helps in identifying the origin of the data and simplifies reprocessing if needed.
+
+### 5. Unit Testing with Pytest
 - **Pytest** is used to create unit tests for the `load_csv` Python script.
 - These tests validate:
   - The correct ingestion of CSV data into the database.
   - Handling of edge cases, such as missing or malformed data.
   - Database connection and insertion logic.
 
-### 4. Indexing for Performance
+### 6. Indexing for Performance
 - A unique index is created on the `SaleID` column in the `raw__sales.fct_sales` table to optimize retrieval.
 - **Alternative Approaches**:
   - Clustering the table based on `SaleID` for faster sequential scans.
   - Partitioning the table by date or region for better query performance on large datasets.
 
-### 5. DBT Approach
+### 7. DBT Approach
 - DBT is used for data transformation and testing:
   - **Staging Models**: Clean and standardize raw data into staging tables (e.g., `stg_sales`).
   - **Testing**: Validate data quality using DBT's built-in tests (e.g., `not_null`, `unique`) and custom tests (e.g., `assert_no_negative_values`).
   - **Modular Design**: Each transformation step is modular, making it easier to debug and maintain.
 
-### 6. Airflow Approach
+### 8. Airflow Approach
 - Apache Airflow is used to orchestrate the pipeline:
   - Tasks are defined as dependent steps in a DAG (`orchestrate_load_csv`).
   - Tags are used to group related tasks for better organization and monitoring.

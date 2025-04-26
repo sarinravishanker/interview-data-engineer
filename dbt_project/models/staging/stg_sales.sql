@@ -11,7 +11,7 @@ WITH
             channel,
             COALESCE(NULLIF(location, 'NaN'), 'Unknown') AS location,
             CAST(quantity AS INT) AS quantity,
-            CAST(REPLACE(price, 'USD', '') AS NUMERIC) AS price,
+            CAST(REPLACE(price, 'USD', '') AS NUMERIC) AS price_in_usd,
             CAST(date AS DATE) AS saledate,
             _etl_timestamp,
             sourcefilename
