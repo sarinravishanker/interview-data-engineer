@@ -95,7 +95,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ## Data Pipeline Flow
 Below is a placeholder for the data pipeline flow diagram. Replace this with an actual image later.
 
-![Data Pipeline Flow](./images/data_pipeline_flow.png)
+![Data Pipeline Flow](./images/ELT_DATA_FLOW.png)
 
 ---
 
