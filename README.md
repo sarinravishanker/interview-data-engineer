@@ -272,7 +272,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ### 4. Modular Design
 - Improve the modularity of the pipeline by separating concerns:
   - Create reusable utility functions for database operations.
-  - Use a configuration file (e.g., `config.yaml`) to manage paths, database credentials, and other settings.
+  - Use a configuration file (e.g., `config.yaml`) to manage paths,secret managers for database credentials, and other settings.
 - This will make the pipeline easier to extend and adapt to new requirements.
 
 ### 5. Scalability and Performance

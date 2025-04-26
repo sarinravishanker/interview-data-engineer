@@ -4,11 +4,11 @@ import psycopg2
 def get_db_config():
     """Retrieve database configuration from environment variables."""
     return {
-        "dbname": os.getenv("POSTGRES_DB", "sales"),
-        "user": os.getenv("POSTGRES_USER", "postgres"),
-        "password": os.getenv("POSTGRES_PASSWORD", "mysecretpassword"),
-        "host": os.getenv("POSTGRES_HOST", "postgres"),
-        "port": int(os.getenv("POSTGRES_PORT", 5432)),
+        "dbname": os.getenv("POSTGRES_DB"),
+        "user": os.getenv("POSTGRES_USER"),
+        "password": os.getenv("POSTGRES_PASSWORD"),
+        "host": os.getenv("POSTGRES_HOST"),
+        "port": int(os.getenv("POSTGRES_PORT")),
     }
 
 def get_db_connection():
