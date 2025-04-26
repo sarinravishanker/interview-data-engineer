@@ -263,7 +263,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ### 3. DBT Improvements
 - Add **custom tests** in DBT to validate business-specific rules (e.g., no negative prices, valid product IDs).
 - Implement **snapshot testing** to track changes in slowly changing dimensions (SCDs).
-- Use **DBT packages** to modularize reusable transformations and macros.
+- Use macros to prevent repeated sql code
 
 ### 4. Modular Design
 - Improve the modularity of the pipeline by separating concerns:
