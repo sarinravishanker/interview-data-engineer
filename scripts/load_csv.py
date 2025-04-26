@@ -37,28 +37,26 @@ class SalesDataProcessor:
         try:
             cursor = conn.cursor()
             for _, row in self.data.iterrows():
-                try:
-                    cursor.execute(
-                        """
-                        INSERT INTO raw__sales.fct_sales (
-                            saleid, productid, productname, brand, category, retailerid, retailername, 
-                            channel, location, quantity, price, date, _etl_timestamp, sourcefilename
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (saleid) DO NOTHING;
-                        """,
-                        (
-                            row["SaleID"], row["ProductID"], row["ProductName"], row["Brand"], row["Category"],
-                            row["RetailerID"], row["RetailerName"], row["Channel"], row["Location"], row["Quantity"],
-                            row["Price"], row["Date"], datetime.now(), file_path.split("/")[-1]
-                        )
+                cursor.execute(
+                    """
+                    INSERT INTO raw__sales.fct_sales (
+                        saleid, productid, productname, brand, category, retailerid, retailername, 
+                        channel, location, quantity, price, date, _etl_timestamp, sourcefilename
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (saleid) DO NOTHING
+                    """,
+                    (
+                        row["SaleID"], row["ProductID"], row["ProductName"], row["Brand"], row["Category"],
+                        row["RetailerID"], row["RetailerName"], row["Channel"], row["Location"], row["Quantity"],
+                        row["Price"], row["Date"], datetime.now(), file_path.split("/")[-1]
                     )
-                except Exception as e:
-                    logging.error(f"Error inserting row into database: {e}")
+                )
             conn.commit()
             logging.info(f"Successfully wrote data from {file_path} to the database.")
         except Exception as e:
+            conn.rollback()  # Roll back the entire transaction
             logging.error(f"Error writing to database for file {file_path}: {e}")
-            raise
+            raise  # Re-raise the exception to fail the task
         finally:
             cursor.close()
             conn.close()
@@ -72,17 +70,22 @@ class SalesDataProcessor:
                 self.write_to_db(file)
             except Exception as e:
                 logging.error(f"Failed to process file {file}: {e}")
+                raise  # Re-raise the exception to ensure Airflow marks the task as FAILED
 
-if __name__ == "__main__":
-    csv_dir = "/Users/sarinravishanker/github-sarin/interview-data-engineer/csv_files"
+def execute_load_csv():
+    """Encapsulate the logic to process CSV files."""
+    csv_dir = "/opt/airflow/csv_files"
     files = [os.path.join(csv_dir, file) for file in os.listdir(csv_dir) if file.endswith(".csv")]
     db_config = {
-        "dbname": os.getenv("POSTGRES_DB"),
-        "user": os.getenv("POSTGRES_USER"),
-        "password": os.getenv("POSTGRES_PASSWORD"),
-        "host": os.getenv("POSTGRES_HOST"),
-        "port": 5432
+        "dbname": os.getenv("POSTGRES_DB", 'sales'),
+        "user": os.getenv("POSTGRES_USER", 'postgres'),
+        "password": os.getenv("POSTGRES_PASSWORD", 'mysecretpassword'),
+        "host": os.getenv("POSTGRES_HOST", 'postgres'),  # Use 'postgres' as the hostname
+        "port": 5432,
     }
-
     processor = SalesDataProcessor(files, db_config)
     processor.process_files()
+
+# Ensure the script can still be executed directly
+if __name__ == "__main__":
+    execute_load_csv()

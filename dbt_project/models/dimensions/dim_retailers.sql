@@ -1,10 +1,12 @@
-with retailers as (
-    select
-        RetailerID,
-        RetailerName,
-        Location,
-        Channel
-    from {{ ref('stg_sales') }}
-    group by RetailerID, RetailerName, Location, Channel
-)
-select * from retailers
+WITH
+    retailers AS (
+        SELECT
+            retailerid,
+            retailername,
+            location,
+            channel
+        FROM {{ ref('stg_sales') }}
+        GROUP BY retailerid, retailername, location, channel
+    )
+
+SELECT * FROM retailers

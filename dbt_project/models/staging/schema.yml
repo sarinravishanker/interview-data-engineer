@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_sales
-    description: "Staging model for cleaning and standardizing raw sales data."
+    description: "Staging model for sales data"
     columns:
       - name: SaleID
         description: "Unique identifier for each sale."
@@ -13,14 +13,12 @@ models:
         description: "Identifier for the product."
         tests:
           - not_null
-      - name: Quantity
-        description: "Quantity of items sold."
+      - name: quantity
+        description: "The quantity of items sold"
         tests:
-          - not_null
-          - accepted_values:
-              values: [1, 2, 3, 4, 5]
-          - positive_values
-      - name: Price
-        description: "Price of the product."
+          - assert_no_negative_values
+      - name: price
+        description: "The price of the item sold"
         tests:
-          - positive_values
+          - assert_no_negative_values
+

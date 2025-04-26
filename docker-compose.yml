@@ -1,11 +1,47 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:latest
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=postgres
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+
+  airflow-webserver:
+    image: apache/airflow:2.6.3-python3.9
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags  # Mount the correct DAGs folder
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./scripts:/opt/airflow/scripts
+      - ./csv_files:/opt/airflow/csv_files  # Mount the csv_files directory
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    command: ["bash", "-c", "airflow db init && airflow users create --username airflow --firstname Admin --lastname User --role Admin --email admin@example.com --password airflow && airflow webserver"]
+
+  airflow-scheduler:
+    image: apache/airflow:2.6.3-python3.9
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+    command: ["bash", "-c", "airflow db init && airflow scheduler"]
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags  # Mount the correct DAGs folder
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./scripts:/opt/airflow/scripts
+      - ./csv_files:/opt/airflow/csv_files  # Mount the csv_files directory
+    depends_on:
+      - postgres
