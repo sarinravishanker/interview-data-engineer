@@ -290,19 +290,62 @@ DBT tests are used to ensure data quality and integrity during the transformatio
 ### 3. DBT Improvements
 - Add **custom tests** in DBT to validate business-specific rules (e.g., no negative prices, valid product IDs).
 - Implement **snapshot testing** to track changes in slowly changing dimensions (SCDs).
-- Use macros to prevent repeated sql code
-- Use various DBT packages, to improve data obsertvability like elementary to track data model performance over time
+- Use macros to prevent repeated SQL code.
+- Use various DBT packages, such as **Elementary**, to improve data observability and track model performance over time.
 
 ### 4. Modular Design
 - Improve the modularity of the pipeline by separating concerns:
   - Create reusable utility functions for database operations.
-  - Use a configuration file (e.g., `config.yaml`) to manage paths,secret managers for database credentials, and other settings.
+  - Use a configuration file (e.g., `config.yaml`) or secret managers for database credentials and other settings.
 - This will make the pipeline easier to extend and adapt to new requirements.
 
 ### 5. Scalability and Performance
 - Optimize database queries for better performance, especially for large datasets.
 - Explore partitioning and indexing strategies for the `raw__sales` table to improve query efficiency.
 - Consider using a distributed data warehouse (e.g., Snowflake, BigQuery) for scalability.
+
+### 6. CI/CD Integration
+- Add **Pytest checks** as part of a **GitHub Actions CI workflow** to validate code and data pipeline logic before deployment to production.
+  - Run unit tests for Python scripts (e.g., `load_csv.py`, `load_csv_incremental.py`) to ensure correctness.
+  - Validate Airflow DAGs using tools like `pytest-airflow` to catch syntax or dependency issues.
+  - Include DBT tests as part of the CI pipeline to ensure data quality checks are enforced during development.
+  - Example GitHub Actions workflow:
+    ```yaml
+    name: CI Pipeline
+
+    on:
+      push:
+        branches:
+          - main
+      pull_request:
+        branches:
+          - main
+
+    jobs:
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v3
+
+          - name: Set up Python
+            uses: actions/setup-python@v4
+            with:
+              python-version: 3.9
+
+          - name: Install dependencies
+            run: |
+              pip install -r requirements.txt
+
+          - name: Run Pytest
+            run: |
+              pytest tests/
+
+          - name: Validate DBT models
+            run: |
+              dbt test --profiles-dir ./dbt_project/profiles --project-dir ./dbt_project
+    ```
+- This ensures that any issues are caught early in the development lifecycle, improving the reliability of the pipeline.
 
 ---
 
