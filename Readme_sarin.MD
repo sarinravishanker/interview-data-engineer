@@ -8,11 +8,14 @@
 5. [Steps to Run the Docker Containers](#steps-to-run-the-docker-containers)
 6. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
 7. [Data Pipeline Flow](#data-pipeline-flow)
+8. [DBT ERD Flow](#dbt-erd-flow)
 
 ---
 
 ## Intro
 This project demonstrates a data engineering pipeline that processes raw sales data, transforms it using DBT, and orchestrates the workflow using Apache Airflow. The pipeline is containerized using Docker for easy deployment and scalability.
+
+> **Note**: The development environment (`dev`) was used to test and showcase the working pipeline. The DBT `profiles.yml` file is configured to use the `dev` target by default.
 
 ---
 
@@ -23,6 +26,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 - **Docker**: Containerization for consistent environments.
 - **Pandas**: Data manipulation for CSV ingestion.
 - **Python**: Core programming language for custom scripts.
+- **Pytest**: Unit testing framework for Python.
 
 ---
 
@@ -32,6 +36,7 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 - **Data Testing**: Validates data quality using DBT tests.
 - **Orchestration**: Automates the entire workflow using Apache Airflow.
 - **Containerized Setup**: Simplifies deployment with Docker.
+- **Unit Tests**: Basic unit tests for the `load_csv` Python script to validate CSV ingestion logic and database interactions.
 
 ---
 
@@ -93,9 +98,14 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 ---
 
 ## Data Pipeline Flow
-Below is a placeholder for the data pipeline flow diagram. Replace this with an actual image later.
 
 ![Data Pipeline Flow](./images/ELT_DATA_FLOW.png)
+
+---
+
+## DBT ERD Flow
+
+![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
 
 ---
 

@@ -18,23 +18,3 @@ models:
         tests:
           - not_null
 
-  - name: dim_retailers
-    description: "Dimensional model for retailer-level aggregated sales data."
-    columns:
-      - name: RetailerID
-        description: "Unique identifier for the retailer."
-        tests:
-          - not_null
-      - name: RetailerName
-        description: "Name of the retailer."
-        tests:
-          - not_null
-      - name: Location
-        description: "Location of the retailer."
-        tests:
-          - not_null
-      - name: Channel
-        description: "Sales channel used by the retailer."
-        tests:
-          - not_null
-

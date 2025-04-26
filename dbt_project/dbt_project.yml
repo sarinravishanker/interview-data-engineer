@@ -30,4 +30,4 @@ models:
       +schema: stg__sales
     dimensions:
       +materialized: table
-      +schema: stg__products
+      +schema: stg__dimensions

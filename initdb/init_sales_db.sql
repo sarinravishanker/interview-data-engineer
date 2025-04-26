@@ -6,6 +6,8 @@ CREATE DATABASE sales;
 
 -- Create schema for raw data
 CREATE SCHEMA IF NOT EXISTS raw__sales;
+CREATE SCHEMA IF NOT EXISTS dev_stg__sales;
+CREATE SCHEMA IF NOT EXISTS dev_stg__dimensions;
 
 -- Create table
 CREATE TABLE IF NOT EXISTS raw__sales.fct_sales (
