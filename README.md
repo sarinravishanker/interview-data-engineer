@@ -119,37 +119,35 @@ This project demonstrates a data engineering pipeline that processes raw sales d
    ```
 
 ### Steps
-1. **Build and Start the Containers**:
-   ```bash
-   docker-compose up --build -d
-   ```
-   This will:
-   - Start a PostgreSQL database.
-   - Start Airflow webserver and scheduler.
-   - Mount the required directories for DAGs, scripts, and DBT projects.
+1. **Initialize the Database**:
+  - The `initdb` folder contains SQL scripts to initialize the `airflow` and `sales` databases.
+    - These scripts are automatically executed when the PostgreSQL container starts.
+    - The `raw__sales.fct_sales` table is created as part of the initialization process and serves as the source for the pipeline's raw data ingestion.
 
-2. **Access the Airflow UI**:
-   - Open [http://localhost:8080](http://localhost:8080) in your browser.
-   - Login credentials:
-     - Username: `airflow`
-     - Password: `airflow`
+2. **Build and Start the Containers**:
+  ```bash
+  docker-compose up --build -d
+  ```
+  This will:
+  - Start a PostgreSQL database.
+  - Start Airflow webserver and scheduler.
+  - Mount the required directories for DAGs, scripts, and DBT projects.
 
 3. **Verify the Setup**:
-   - Check the running containers:
-     ```bash
-     docker-compose ps
-     ```
-   - Ensure all services (`postgres`, `airflow-webserver`, `airflow-scheduler`) are running.
-
-4. **Initialize the Database**:
-   - The `initdb` folder contains SQL scripts to initialize the `airflow` and `sales` databases.
-   - These scripts are automatically executed when the PostgreSQL container starts.
+  - Check the running containers:
+    ```bash
+    docker-compose ps
+    ```
+  - Ensure all services (`postgres`, `airflow-webserver`, `airflow-scheduler`) are running.
 
 ---
 
 ## Testing via the Airflow UI
 1. **Access the Airflow UI**:
-   - Open [http://localhost:8080](http://localhost:8080) in your browser.
+   - Open [http://localhost:8080](http://localhost:8080) in your browser. (Refresh the page as this step may take a few seconds)
+   - Login credentials:
+     - Username: `airflow`
+     - Password: `airflow`
 
 2. **Trigger the DAG**:
    - Locate the DAG named `orchestrate_load_csv`.
