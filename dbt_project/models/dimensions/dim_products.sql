@@ -4,9 +4,7 @@ WITH
             productid,
             productname,
             brand,
-            category,
-            SUM(quantity) AS totalquantitysold,
-            SUM(price * quantity) AS totalrevenue
+            category
         FROM {{ ref('stg_sales') }}
         GROUP BY productid, productname, brand, category
     )

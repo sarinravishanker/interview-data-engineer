@@ -138,6 +138,45 @@ This project demonstrates a data engineering pipeline that processes raw sales d
      SELECT * FROM raw__sales.fct_sales LIMIT 10;
      ```
 
+5. **Check DBT Models in PostgreSQL**:
+   - Follow these steps to verify that the DBT models were created and the data is loaded correctly:
+     1. **Access the PostgreSQL Container**:
+        ```bash
+        docker exec -it <postgres-container-id> psql -U postgres -d sales
+        ```
+        Replace `<postgres-container-id>` with the actual container ID or name of the PostgreSQL service. You can find it by running:
+        ```bash
+        docker ps
+        ```
+
+     2. **List Available Schemas**:
+        ```sql
+        \dn
+        ```
+        You should see schemas like `raw__sales`, `dev_stg__sales`, and `dev_stg__dimensions`.
+
+     3. **List Tables in the Schema**:
+        ```sql
+        \dt dev_stg__sales.*
+        ```
+        This will list all tables in the `dev_stg__sales` schema.
+
+     4. **Query the DBT Models**:
+        ```sql
+        SELECT * FROM dev_stg__sales.stg_sales LIMIT 10;
+        ```
+        This will display the first 10 rows of the `stg_sales` table.
+
+     5. **Verify Raw Data**:
+        ```sql
+        SELECT * FROM raw__sales.fct_sales LIMIT 10;
+        ```
+
+     6. **Exit the PostgreSQL Prompt**:
+        ```bash
+        \q
+        ```
+
 ---
 
 ## Data Pipeline Flow
