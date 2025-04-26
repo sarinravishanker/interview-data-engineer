@@ -28,7 +28,55 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 ## DBT ERD Flow
 
-![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
+              ![DBT ERD Flow](./images/ERD_CONCEPTUAL.png)
+
+raw__sales.fct_sales
++-------------------+
+| SaleID (PK)       |
+| ProductID         |
+| ProductName       |
+| Brand             |
+| Category          |
+| RetailerID        |
+| RetailerName      |
+| Channel           |
+| Location          |
+| Quantity          |
+| Price             |
+| Date              |
+| _etl_timestamp    |
+| sourceFileName    |
++-------------------+
+
+    SaleID
+      ↓
+dev_stg__sales.stg_sales
++-------------------+
+| SaleID (PK)       |
+| ProductID         |
+| ProductName       |
+| Brand             |
+| Category          |
+| RetailerID        |
+| RetailerName      |
+| Channel           |
+| Location          |
+| Quantity          |
+| Price             |
+| SaleDate          |
+| _etl_timestamp    |
+| sourceFileName    |
++-------------------+
+
+    ProductID
+      ↓
+dev_stg__dimensions.dim_products
++-------------------+
+| ProductID (PK)    |
+| ProductName       |
+| Brand             |
+| Category          |
++-------------------+
 
 ---
 
