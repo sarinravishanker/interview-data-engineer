@@ -2,13 +2,14 @@
 
 ## Table of Contents
 1. [Intro](#intro)
-2. [Tech Stack](#tech-stack)
-3. [Features](#features)
-4. [Quick Start](#quick-start)
-5. [Steps to Run the Docker Containers](#steps-to-run-the-docker-containers)
-6. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
-7. [Data Pipeline Flow](#data-pipeline-flow)
-8. [DBT ERD Flow](#dbt-erd-flow)
+2. [Approach](#approach)
+3. [Tech Stack](#tech-stack)
+4. [Features](#features)
+5. [Quick Start](#quick-start)
+6. [Steps to Run the Docker Containers](#steps-to-run-the-docker-containers)
+7. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
+8. [Data Pipeline Flow](#data-pipeline-flow)
+9. [DBT ERD Flow](#dbt-erd-flow)
 
 ---
 
@@ -16,6 +17,48 @@
 This project demonstrates a data engineering pipeline that processes raw sales data, transforms it using DBT, and orchestrates the workflow using Apache Airflow. The pipeline is containerized using Docker for easy deployment and scalability.
 
 > **Note**: The development environment (`dev`) was used to test and showcase the working pipeline. The DBT `profiles.yml` file is configured to use the `dev` target by default.
+
+---
+
+## Approach
+
+### 1. Choosing an ELT Approach
+- **Why ELT over ETL?**
+  - ELT (Extract, Load, Transform) allows raw data to be ingested into the database first, enabling transformations to be performed closer to the data.
+  - This approach leverages the database's processing power for transformations, making it more scalable and efficient for large datasets.
+  - It also ensures that raw data is preserved for auditing and debugging purposes.
+
+### 2. Landing Zone (Raw Schema)
+- The raw data is ingested into the `raw__sales` schema in the PostgreSQL database.
+- This schema acts as the landing zone, where the data is stored in its original format before any transformations are applied.
+
+### 3. Unit Testing with Pytest
+- **Pytest** is used to create unit tests for the `load_csv` Python script.
+- These tests validate:
+  - The correct ingestion of CSV data into the database.
+  - Handling of edge cases, such as missing or malformed data.
+  - Database connection and insertion logic.
+
+### 4. Indexing for Performance
+- A unique index is created on the `SaleID` column in the `raw__sales.fct_sales` table to optimize retrieval.
+- **Alternative Approaches**:
+  - Clustering the table based on `SaleID` for faster sequential scans.
+  - Partitioning the table by date or region for better query performance on large datasets.
+
+### 5. DBT Approach
+- DBT is used for data transformation and testing:
+  - **Staging Models**: Clean and standardize raw data into staging tables (e.g., `stg_sales`).
+  - **Testing**: Validate data quality using DBT's built-in tests (e.g., `not_null`, `unique`) and custom tests (e.g., `assert_no_negative_values`).
+  - **Modular Design**: Each transformation step is modular, making it easier to debug and maintain.
+
+### 6. Airflow Approach
+- Apache Airflow is used to orchestrate the pipeline:
+  - Tasks are defined as dependent steps in a DAG (`orchestrate_load_csv`).
+  - Tags are used to group related tasks for better organization and monitoring.
+  - The DAG includes the following tasks:
+    1. **`execute_load_csv`**: Ingest raw data into the database.
+    2. **`execute_dbt_models`**: Transform raw data using DBT models.
+    3. **`execute_dbt_tests`**: Validate the transformed data using DBT tests.
 
 ---
 
