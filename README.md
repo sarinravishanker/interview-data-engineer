@@ -102,8 +102,8 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 - **PostgreSQL**: Database for raw and transformed data.
 - **Docker**: Containerization for consistent environments.
 - **Pandas**: Data manipulation for CSV ingestion.
-- **Python**: Core programming language for custom scripts.
-- **Pytest**: Unit testing framework for Python.
+  - **Python**: Core programming language for custom scripts.
+  - **Pytest**: Unit testing framework for Python.
 
 ---
 
