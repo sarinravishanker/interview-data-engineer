@@ -106,14 +106,16 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 ## Quick Start
 ### Prerequisites
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop).
-2. Clone this repository:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and ensure it is running.
+2. Install [Docker Compose](https://docs.docker.com/compose/install/) for managing multi-container applications.
+3. Clone this repository:
    ```bash
    git clone https://github.com/sarinravishanker/interview-data-engineer.git
    cd interview-data-engineer
    ```
 
-3. **Build and Start the Containers**:
+### Steps
+1. **Build and Start the Containers**:
    ```bash
    docker-compose up --build -d
    ```
@@ -122,20 +124,20 @@ This project demonstrates a data engineering pipeline that processes raw sales d
    - Start Airflow webserver and scheduler.
    - Mount the required directories for DAGs, scripts, and DBT projects.
 
-4. **Access the Airflow UI**:
+2. **Access the Airflow UI**:
    - Open [http://localhost:8080](http://localhost:8080) in your browser.
    - Login credentials:
      - Username: `airflow`
      - Password: `airflow`
 
-5. **Verify the Setup**:
+3. **Verify the Setup**:
    - Check the running containers:
      ```bash
      docker-compose ps
      ```
    - Ensure all services (`postgres`, `airflow-webserver`, `airflow-scheduler`) are running.
 
-6. **Initialize the Database**:
+4. **Initialize the Database**:
    - The `initdb` folder contains SQL scripts to initialize the `airflow` and `sales` databases.
    - These scripts are automatically executed when the PostgreSQL container starts.
 
