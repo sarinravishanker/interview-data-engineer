@@ -114,8 +114,8 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 3. Clone this repository:
    ```bash
    git clone https://github.com/sarinravishanker/interview-data-engineer.git
-   git checkout sarin_interview
-   cd interview-data-engineer #make sure you are in this folder
+   git checkout sarin_interview #make sure to checkout this feature branch
+   cd interview-data-engineer 
    ```
 
 ### Steps
