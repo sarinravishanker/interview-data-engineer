@@ -8,6 +8,7 @@
 5. [Tech Stack](#tech-stack)
 6. [Quick Start](#quick-start)
 7. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
+8. [Testing Incremental Loading](#testing-incremental-loading)
 
 ---
 
@@ -209,9 +210,44 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 ---
 
+## Testing Incremental Loading
+
+To test incremental loading, we assume that `SaleID` increases whenever there are new records. The goal is to load only the latest records into the database without reprocessing existing data. This can be achieved by running the `load_csv_incremental.py` script.
+
+### Steps to Test Incremental Loading
+
+1. **Prepare the Incremental Data**:
+   - Add a new CSV file containing only the latest records with higher `SaleID` values than those already present in the database.
+   - Place the file in the `csv_files` directory.
+
+2. **Run the Incremental Loading Script**:
+   - Use the `load_csv_incremental.py` script to load only the new records:
+     ```bash
+     docker exec -it <airflow-webserver-container-id> python /opt/airflow/scripts/load_csv_incremental.py
+     ```
+
+3. **Verify the Results**:
+   - Check the `raw__sales.fct_sales` table to ensure only the new records have been added:
+     ```bash
+     docker exec -it <postgres-container-id> psql -U postgres -d sales
+     SELECT * FROM raw__sales.fct_sales ORDER BY SaleID DESC LIMIT 10;
+     ```
+
+4. **Run the DAG**:
+   - Trigger the Airflow DAG `orchestrate_load_csv` to process the new data through DBT transformations and tests.
+
+5. **Verify the DBT Models**:
+   - Check the staging and dimension tables to ensure the new records have been processed correctly:
+     ```sql
+     SELECT * FROM dev_stg__sales.stg_sales ORDER BY SaleID DESC LIMIT 10;
+     SELECT * FROM dev_stg__dimensions.dim_products LIMIT 10;
+     ```
+
+---
+
 ## Notes
-- Ensure the `csv_files` directory contains valid CSV files before triggering the DAG.
-- Update the `profiles.yml` file in the `dbt_project` folder to configure DBT profiles for different environments.
-- Use the `logs` directory to debug any issues with Airflow tasks or DBT commands.
+- Ensure the `load_csv_incremental.py` script is configured to handle incremental logic by comparing the `SaleID` values.
+- Incremental loading assumes that `SaleID` is a monotonically increasing unique identifier.
+- Use the Airflow logs to debug any issues during the incremental loading process.
 
 ---
