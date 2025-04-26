@@ -1,7 +1,6 @@
 import pandas as pd
-import psycopg2
 import logging
-from datetime import datetime
+from db_config import get_db_connection  # Import the reusable database configuration
 
 # Configure logging
 logging.basicConfig(
@@ -12,14 +11,7 @@ logging.basicConfig(
 
 def execute_load_csv_incremental():
     try:
-        # Database connection details
-        conn = psycopg2.connect(
-            dbname="sales",
-            user="postgres",
-            password="mysecretpassword",
-            host="postgres",
-            port="5432"
-        )
+        conn = get_db_connection()  # Use the reusable database connection
         cursor = conn.cursor()
         logging.info("Connected to the database successfully.")
 
@@ -46,15 +38,15 @@ def execute_load_csv_incremental():
                 """, tuple(row))
             except Exception as e:
                 logging.error(f"Error inserting record {row['SaleID']}: {e}")
-                continue
+                raise  # Raise an exception to fail the task
 
         conn.commit()
         logging.info(f"Inserted {len(new_records)} new records into raw__sales.fct_sales.")
 
     except Exception as e:
         logging.error(f"An error occurred during the incremental load process: {e}")
+        raise  # Re-raise the exception to ensure Airflow marks the task as FAILED
     finally:
-        # Close the database connection
         if 'cursor' in locals():
             cursor.close()
             logging.info("Database cursor closed.")

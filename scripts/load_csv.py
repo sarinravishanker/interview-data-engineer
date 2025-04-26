@@ -1,8 +1,8 @@
 import os
 import pandas as pd
-import psycopg2
 from datetime import datetime
 import logging
+from db_config import get_db_connection  # Import the reusable database configuration
 
 # Configure logging
 logging.basicConfig(
@@ -15,9 +15,8 @@ logging.basicConfig(
 )
 
 class SalesDataProcessor:
-    def __init__(self, files, db_config):
+    def __init__(self, files):
         self.files = files
-        self.db_config = db_config
         self.data = None
 
     def read_csv(self, file_path):
@@ -33,7 +32,7 @@ class SalesDataProcessor:
 
     def write_to_db(self, file_path):
         """Write the data to the database."""
-        conn = psycopg2.connect(**self.db_config)
+        conn = get_db_connection()  # Use the reusable database connection
         try:
             cursor = conn.cursor()
             for _, row in self.data.iterrows():
@@ -76,14 +75,7 @@ def execute_load_csv():
     """Encapsulate the logic to process CSV files."""
     csv_dir = "/opt/airflow/csv_files"
     files = [os.path.join(csv_dir, file) for file in os.listdir(csv_dir) if file.endswith(".csv")]
-    db_config = {
-        "dbname": os.getenv("POSTGRES_DB", 'sales'),
-        "user": os.getenv("POSTGRES_USER", 'postgres'),
-        "password": os.getenv("POSTGRES_PASSWORD", 'mysecretpassword'),
-        "host": os.getenv("POSTGRES_HOST", 'postgres'),  # Use 'postgres' as the hostname
-        "port": 5432,
-    }
-    processor = SalesDataProcessor(files, db_config)
+    processor = SalesDataProcessor(files)
     processor.process_files()
 
 # Ensure the script can still be executed directly
