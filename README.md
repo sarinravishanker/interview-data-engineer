@@ -101,8 +101,8 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 - **DBT (Data Build Tool)**: Data transformation and testing.
 - **PostgreSQL**: Database for raw and transformed data.
 - **Docker**: Containerization for consistent environments.
-- **Pandas**: Data manipulation for CSV ingestion.
-  - **Python**: Core programming language for custom scripts.
+- **Python**: Core programming language for custom scripts.
+  - **Pandas**: Data manipulation for CSV ingestion.
   - **Pytest**: Unit testing framework for Python.
 
 ---
