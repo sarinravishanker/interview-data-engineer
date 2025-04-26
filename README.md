@@ -10,6 +10,7 @@
 7. [Quick Start](#quick-start)
 8. [Steps to Run the Docker Containers](#steps-to-run-the-docker-containers)
 9. [Testing via the Airflow UI](#testing-via-the-airflow-ui)
+10. [Accessing DBT Docs](#accessing-dbt-docs)
 
 ---
 
@@ -117,6 +118,41 @@ This project demonstrates a data engineering pipeline that processes raw sales d
    cd interview-data-engineer
    ```
 
+### Steps
+1. **Build and Start the Containers**:
+   ```bash
+   docker-compose up --build -d
+   ```
+   This will:
+   - Start a PostgreSQL database.
+   - Start Airflow webserver and scheduler.
+   - Start the `dbt-docs` service to host DBT documentation.
+   - Mount the required directories for DAGs, scripts, and DBT projects.
+
+2. **Access the Airflow UI**:
+   - Open [http://localhost:8080](http://localhost:8080) in your browser.
+   - Login credentials:
+     - Username: `airflow`
+     - Password: `airflow`
+
+3. **Access the DBT Docs**:
+   - Open [http://localhost:8081](http://localhost:8081) in your browser.
+   - Explore the DBT documentation to:
+     - View the lineage graph of your DBT models.
+     - Explore the schema and metadata of your models.
+     - Access details about tests, sources, and macros.
+
+4. **Verify the Setup**:
+   - Check the running containers:
+     ```bash
+     docker-compose ps
+     ```
+   - Ensure all services (`postgres`, `airflow-webserver`, `airflow-scheduler`, and `dbt-docs`) are running.
+
+5. **Initialize the Database**:
+   - The `initdb` folder contains SQL scripts to initialize the `airflow` and `sales` databases.
+   - These scripts are automatically executed when the PostgreSQL container starts.
+
 ---
 
 ## Steps to Run the Docker Containers
@@ -211,9 +247,46 @@ This project demonstrates a data engineering pipeline that processes raw sales d
 
 ---
 
+## Accessing DBT Docs
+
+The DBT documentation is hosted using the `dbt docs generate` and `dbt docs serve` commands within the `dbt-docs` service. Follow these steps to access the DBT docs:
+
+1. **Start the Docker Containers**:
+   Ensure the `dbt-docs` service is running by starting the Docker containers:
+   ```bash
+   docker-compose up --build -d
+   ```
+
+2. **Access the DBT Docs**:
+   Open your browser and navigate to:
+   ```
+   http://localhost:8081
+   ```
+
+3. **Explore the Documentation**:
+   - The DBT docs interface allows you to:
+     - View the lineage graph of your DBT models.
+     - Explore the schema and metadata of your models.
+     - Access details about tests, sources, and macros.
+
+4. **Stop the DBT Docs Server**:
+   If you need to stop the `dbt-docs` service, run:
+   ```bash
+   docker-compose stop dbt-docs
+   ```
+
+---
+
 ## Notes
 - Ensure the `csv_files` directory contains valid CSV files before triggering the DAG.
 - Update the `profiles.yml` file in the `dbt_project` folder to configure DBT profiles for different environments.
 - Use the `logs` directory to debug any issues with Airflow tasks or DBT commands.
+- Ensure the `dbt_project` directory contains a valid DBT project with a `profiles.yml` file configured for the `dev` environment.
+- If port `8081` is already in use, you can change it in the `docker-compose.yml` file under the `dbt-docs` service:
+  ```yaml
+  ports:
+    - "8082:8081"  # Map to a different host port
+  ```
+  Then access the DBT docs at `http://localhost:8082`.
 
 ---

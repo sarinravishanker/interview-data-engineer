@@ -51,3 +51,16 @@ services:
       - ./dbt_project:/opt/airflow/dbt_project  # Mount the dbt_project directory
     depends_on:
       - postgres
+
+  dbt-docs:
+    image: apache/airflow:2.6.3-python3.9  # Use the same base image as Airflow
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use the custom Dockerfile
+    command: ["bash", "-c", "cd /opt/airflow/dbt_project && dbt docs generate && dbt docs serve --port 8081 --profiles-dir profiles"]
+    ports:
+      - "8081:8081"  # Map port 8081 for dbt docs
+    volumes:
+      - ./dbt_project:/opt/airflow/dbt_project  # Mount the dbt_project directory
+    depends_on:
+      - postgres

@@ -15,7 +15,7 @@ models:
           - not_null
       - name: quantity
         description: "The quantity of items sold"
-      - name: price
+      - name: price_in_usd
         description: "The price of the item sold"
         tests:
           - assert_no_negative_values
