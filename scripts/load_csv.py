@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from datetime import datetime
 import logging
-from db_config import get_db_connection  # Import the reusable database configuration
+from db_config import get_db_connection
 
 # Configure logging
 logging.basicConfig(
